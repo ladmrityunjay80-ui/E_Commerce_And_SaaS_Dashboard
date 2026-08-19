@@ -55,6 +55,10 @@ class SubscriptionService:
         """Get subscription by subscription number."""
         return self.db.query(Subscription).filter(Subscription.subscription_number == subscription_number).first()
 
+    def get_subscription_by_gateway_id(self, gateway_id: str) -> Optional[Subscription]:
+        """Get subscription by gateway subscription/payment ID."""
+        return self.db.query(Subscription).filter(Subscription.gateway_subscription_id == gateway_id).first()
+
     def create_subscription(self, subscription_data: SubscriptionCreate) -> Subscription:
         """Create a new subscription."""
         # Get plan

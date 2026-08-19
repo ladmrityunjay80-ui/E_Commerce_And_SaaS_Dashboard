@@ -52,6 +52,10 @@ class OrderService:
         """Get order by ID."""
         return self.db.query(Order).filter(Order.id == order_id).first()
 
+    def get_order_by_payment_transaction(self, transaction_id: str) -> Optional[Order]:
+        """Get order by payment transaction ID."""
+        return self.db.query(Order).filter(Order.payment_transaction_id == transaction_id).first()
+
     def get_order_by_number(self, order_number: str) -> Optional[Order]:
         """Get order by order number."""
         return self.db.query(Order).filter(Order.order_number == order_number).first()
