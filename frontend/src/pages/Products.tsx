@@ -25,6 +25,20 @@ export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [form, setForm] = useState({
+    name: '',
+    slug: '',
+    description: '',
+    sku: '',
+    price: '',
+    compare_price: '',
+    stock_quantity: '',
+    status: 'draft',
+    is_featured: 'false',
+    is_digital: 'false',
+  });
+  const [submitting, setSubmitting] = useState(false);
   const { productFilters, setProductFilters } = useFilterStore();
 
   useEffect(() => {
@@ -53,6 +67,36 @@ export default function Products() {
     setProductFilters({ status: status === 'all' ? undefined : status, skip: 0 });
   };
 
+  const handleCreateProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    const payload = {
+      name: form.name,
+      slug: form.slug || form.name.toLowerCase().replace(/\s+/g, '-'),
+      description: form.description || undefined,
+      sku: form.sku || undefined,
+      price: parseFloat(form.price),
+      compare_price: form.compare_price ? parseFloat(form.compare_price) : undefined,
+      stock_quantity: parseInt(form.stock_quantity, 10) || 0,
+      status: form.status,
+      is_featured: form.is_featured === 'true',
+      is_digital: form.is_digital === 'true',
+    };
+
+    try {
+      await api.post('/api/v1/products', payload);
+      setDialogOpen(false);
+      setForm({ name: '', slug: '', description: '', sku: '', price: '', compare_price: '', stock_quantity: '', status: 'draft', is_featured: 'false', is_digital: 'false' });
+      fetchProducts();
+    } catch (error) {
+      console.error('Failed to create product:', error);
+      alert('Failed to create product');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (loading) {
     return <div className="flex items-center justify-center h-64">Loading...</div>;
   }
@@ -64,18 +108,88 @@ export default function Products() {
           <h1 className="text-3xl font-bold">Products</h1>
           <p className="text-muted-foreground">Manage your product catalog and inventory</p>
         </div>
-        <Dialog>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
               Add Product
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Add New Product</DialogTitle>
             </DialogHeader>
-            <p className="text-sm text-muted-foreground">Product creation form will be implemented here</p>
+            <form onSubmit={handleCreateProduct} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" htmlFor="p-name">Name</label>
+                  <Input id="p-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" htmlFor="p-sku">SKU</label>
+                  <Input id="p-sku" value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="p-slug">Slug</label>
+                <Input id="p-slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="Auto-generated from name" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="p-desc">Description</label>
+                <Input id="p-desc" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" htmlFor="p-price">Price</label>
+                  <Input id="p-price" type="number" step="0.01" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" htmlFor="p-compare">Compare Price</label>
+                  <Input id="p-compare" type="number" step="0.01" min="0" value={form.compare_price} onChange={(e) => setForm({ ...form, compare_price: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" htmlFor="p-stock">Stock</label>
+                  <Input id="p-stock" type="number" min="0" value={form.stock_quantity} onChange={(e) => setForm({ ...form, stock_quantity: e.target.value })} required />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Status</label>
+                  <Select value={form.status} onValueChange={(status) => setForm({ ...form, status })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                      <SelectItem value="draft">Draft</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Featured</label>
+                  <Select value={form.is_featured} onValueChange={(val) => setForm({ ...form, is_featured: val })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Yes</SelectItem>
+                      <SelectItem value="false">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Digital</label>
+                  <Select value={form.is_digital} onValueChange={(val) => setForm({ ...form, is_digital: val })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Yes</SelectItem>
+                      <SelectItem value="false">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+                <Button type="submit" disabled={submitting}>{submitting ? 'Creating...' : 'Create Product'}</Button>
+              </div>
+            </form>
           </DialogContent>
         </Dialog>
       </div>

@@ -4,6 +4,7 @@ import { useAuthStore, useUIStore } from './store/useStore';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
+import Customers from './pages/Customers';
 import Products from './pages/Products';
 import Orders from './pages/Orders';
 import Subscriptions from './pages/Subscriptions';
@@ -32,6 +33,7 @@ function App() {
           <Route index element={<Navigate to="/dashboard" />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<Users />} />
+          <Route path="customers" element={<Customers />} />
           <Route path="products" element={<Products />} />
           <Route path="orders" element={<Orders />} />
           <Route path="subscriptions" element={<Subscriptions />} />

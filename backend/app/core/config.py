@@ -1,5 +1,10 @@
+from pathlib import Path
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 from typing import Optional
+
+# Ensure the repository .env takes precedence over globally exported env vars.
+load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env", override=True)
 
 
 class Settings(BaseSettings):

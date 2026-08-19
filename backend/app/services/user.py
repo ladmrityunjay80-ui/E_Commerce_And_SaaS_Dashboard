@@ -67,10 +67,15 @@ class UserService:
             is_verified=False,
         )
         
-        # Assign default customer role
-        customer_role = self.db.query(Role).filter(Role.name == "customer").first()
-        if customer_role:
-            db_user.roles.append(customer_role)
+        # Assign requested role or default customer role
+        role_name = (user_data.role or "customer").lower()
+        role = self.db.query(Role).filter(Role.name == role_name).first()
+        if role:
+            db_user.roles.append(role)
+        else:
+            customer_role = self.db.query(Role).filter(Role.name == "customer").first()
+            if customer_role:
+                db_user.roles.append(customer_role)
         
         self.db.add(db_user)
         self.db.commit()

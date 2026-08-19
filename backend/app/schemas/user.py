@@ -45,6 +45,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
     username: Optional[str] = None
+    role: Optional[str] = None
 
 
 class UserUpdate(BaseModel):

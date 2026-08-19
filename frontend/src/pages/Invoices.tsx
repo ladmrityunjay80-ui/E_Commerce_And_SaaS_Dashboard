@@ -24,14 +24,18 @@ export default function Invoices() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     fetchInvoices();
-  }, []);
+  }, [search, statusFilter]);
 
   const fetchInvoices = async () => {
     try {
-      const response = await api.get('/api/v1/invoices');
+      const params: Record<string, string> = {};
+      if (search) params.search = search;
+      if (statusFilter !== 'all') params.status = statusFilter;
+      const response = await api.get('/api/v1/invoices', { params });
       setInvoices(response.data);
     } catch (error) {
       console.error('Failed to fetch invoices:', error);
@@ -45,7 +49,7 @@ export default function Invoices() {
   };
 
   const handleStatusFilter = (status: string) => {
-    // Implement status filter
+    setStatusFilter(status);
   };
 
   if (loading) {
@@ -80,7 +84,7 @@ export default function Invoices() {
                 />
               </div>
             </div>
-            <Select onValueChange={handleStatusFilter}>
+            <Select value={statusFilter} onValueChange={handleStatusFilter}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>

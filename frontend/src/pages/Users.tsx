@@ -13,6 +13,8 @@ interface User {
   id: number;
   email: string;
   full_name?: string;
+  username?: string;
+  phone?: string;
   is_active: boolean;
   is_verified: boolean;
   is_superuser: boolean;
@@ -24,6 +26,16 @@ export default function Users() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [form, setForm] = useState({
+    full_name: '',
+    email: '',
+    username: '',
+    phone: '',
+    password: '',
+    role: 'customer',
+  });
+  const [submitting, setSubmitting] = useState(false);
   const { userFilters, setUserFilters } = useFilterStore();
 
   useEffect(() => {
@@ -56,6 +68,22 @@ export default function Users() {
     setUserFilters({ is_active: status === 'all' ? undefined : status === 'active', skip: 0 });
   };
 
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await api.post('/api/v1/users', form);
+      setDialogOpen(false);
+      setForm({ full_name: '', email: '', username: '', phone: '', password: '', role: 'customer' });
+      fetchUsers();
+    } catch (error) {
+      console.error('Failed to create user:', error);
+      alert('Failed to create user');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (loading) {
     return <div className="flex items-center justify-center h-64">Loading...</div>;
   }
@@ -67,18 +95,57 @@ export default function Users() {
           <h1 className="text-3xl font-bold">Users</h1>
           <p className="text-muted-foreground">Manage user accounts and permissions</p>
         </div>
-        <Dialog>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
               Add User
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Add New User</DialogTitle>
             </DialogHeader>
-            <p className="text-sm text-muted-foreground">User creation form will be implemented here</p>
+            <form onSubmit={handleCreateUser} className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="full_name">Full Name</label>
+                <Input id="full_name" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="email">Email</label>
+                <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="username">Username</label>
+                <Input id="username" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="phone">Phone</label>
+                <Input id="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="password">Password</label>
+                <Input id="password" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Role</label>
+                <Select value={form.role} onValueChange={(role) => setForm({ ...form, role })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="customer">Customer</SelectItem>
+                    <SelectItem value="support">Support</SelectItem>
+                    <SelectItem value="manager">Manager</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+                <Button type="submit" disabled={submitting}>{submitting ? 'Creating...' : 'Create User'}</Button>
+              </div>
+            </form>
           </DialogContent>
         </Dialog>
       </div>

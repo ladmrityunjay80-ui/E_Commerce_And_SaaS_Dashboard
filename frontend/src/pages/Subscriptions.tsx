@@ -28,14 +28,18 @@ export default function Subscriptions() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     fetchSubscriptions();
-  }, []);
+  }, [search, statusFilter]);
 
   const fetchSubscriptions = async () => {
     try {
-      const response = await api.get('/api/v1/subscriptions');
+      const params: Record<string, string> = {};
+      if (search) params.search = search;
+      if (statusFilter !== 'all') params.status = statusFilter;
+      const response = await api.get('/api/v1/subscriptions', { params });
       setSubscriptions(response.data);
     } catch (error) {
       console.error('Failed to fetch subscriptions:', error);
@@ -49,7 +53,7 @@ export default function Subscriptions() {
   };
 
   const handleStatusFilter = (status: string) => {
-    // Implement status filter
+    setStatusFilter(status);
   };
 
   if (loading) {
@@ -84,7 +88,7 @@ export default function Subscriptions() {
                 />
               </div>
             </div>
-            <Select onValueChange={handleStatusFilter}>
+            <Select value={statusFilter} onValueChange={handleStatusFilter}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>

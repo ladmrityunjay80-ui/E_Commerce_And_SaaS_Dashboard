@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { 
   LayoutDashboard, 
   Users, 
+  Building2,
   Package, 
   ShoppingCart, 
   CreditCard, 
@@ -19,6 +20,7 @@ import {
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Users', href: '/users', icon: Users },
+  { name: 'Customers', href: '/customers', icon: Building2 },
   { name: 'Products', href: '/products', icon: Package },
   { name: 'Orders', href: '/orders', icon: ShoppingCart },
   { name: 'Subscriptions', href: '/subscriptions', icon: CreditCard },
