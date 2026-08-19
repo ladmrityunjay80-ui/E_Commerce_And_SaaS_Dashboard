@@ -139,11 +139,11 @@ async def update_order_status(
 
 @router.patch("/{order_id}/payment-status", response_model=Order)
 async def update_payment_status(
+    request: Request,
     order_id: int,
     payment_status: str,
     payment_gateway: Optional[str] = None,
     transaction_id: Optional[str] = None,
-    request: Request,
     current_user: UserModel = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):

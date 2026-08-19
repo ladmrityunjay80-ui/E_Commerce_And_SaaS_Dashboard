@@ -5,7 +5,7 @@ from datetime import datetime
 from app.core.database import get_db
 from app.schemas.subscription import Subscription, SubscriptionCreate, SubscriptionUpdate, SubscriptionFilter, Plan, PlanCreate, PlanUpdate
 from app.services.subscription import SubscriptionService, PlanService
-from app.api.deps import get_current_user, get_client_ip
+from app.api.deps import get_current_user, get_current_superuser, get_client_ip
 from app.models.user import User as UserModel
 from app.core.rbac import has_permission
 
@@ -119,9 +119,9 @@ async def update_subscription(
 
 @router.post("/{subscription_id}/cancel", response_model=Subscription)
 async def cancel_subscription(
+    request: Request,
     subscription_id: int,
     reason: Optional[str] = None,
-    request: Request,
     current_user: UserModel = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):

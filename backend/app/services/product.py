@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from app.models.product import Product, Category, ProductCategory
+from app.models.product import Product, Category, product_category as ProductCategory
 from app.schemas.product import ProductCreate, ProductUpdate, ProductFilter, CategoryCreate, CategoryUpdate
 import json
 
@@ -29,7 +29,7 @@ class ProductService:
         # Category filter
         if filters.category_id:
             query = query.join(ProductCategory).filter(
-                ProductCategory.category_id == filters.category_id
+                ProductCategory.c.category_id == filters.category_id
             )
         
         # Featured filter

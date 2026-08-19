@@ -141,10 +141,10 @@ async def delete_product(
 
 @router.post("/{product_id}/stock")
 async def update_product_stock(
+    request: Request,
     product_id: int,
     quantity: int,
     increment: bool = True,
-    request: Request,
     current_user: UserModel = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):

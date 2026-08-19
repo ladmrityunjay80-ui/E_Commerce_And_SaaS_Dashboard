@@ -46,8 +46,8 @@ async def register(
 
 @router.post("/login", response_model=Token)
 async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
     request: Request,
+    form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
     """Login with email and password."""

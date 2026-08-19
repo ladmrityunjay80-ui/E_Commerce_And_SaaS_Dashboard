@@ -154,10 +154,10 @@ async def update_invoice(
 
 @router.post("/{invoice_id}/mark-paid", response_model=Invoice)
 async def mark_invoice_as_paid(
+    request: Request,
     invoice_id: int,
     payment_method: Optional[str] = None,
     transaction_id: Optional[str] = None,
-    request: Request,
     current_user: UserModel = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
