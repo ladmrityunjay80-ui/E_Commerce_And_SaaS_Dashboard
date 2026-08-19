@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import engine, Base
-from app.api.v1 import auth, users, customers, products, orders, subscriptions, invoices, payments, analytics, websocket
+from app.api.v1 import auth, users, customers, products, orders, subscriptions, invoices, payments, uploads, emails, analytics, websocket
 
 # Auto-create tables for SQLite/dev convenience; Postgres should use Alembic.
 if "sqlite" in settings.DATABASE_URL or settings.ENVIRONMENT == "development":
@@ -32,6 +32,8 @@ app.include_router(orders.router, prefix="/api/v1/orders", tags=["Orders"])
 app.include_router(subscriptions.router, prefix="/api/v1/subscriptions", tags=["Subscriptions"])
 app.include_router(invoices.router, prefix="/api/v1/invoices", tags=["Invoices"])
 app.include_router(payments.router, prefix="/api/v1/payments", tags=["Payments"])
+app.include_router(uploads.router, prefix="/api/v1/uploads", tags=["Uploads"])
+app.include_router(emails.router, prefix="/api/v1/emails", tags=["Emails"])
 app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["Analytics"])
 app.include_router(websocket.router, prefix="/api/v1", tags=["WebSocket"])
 
