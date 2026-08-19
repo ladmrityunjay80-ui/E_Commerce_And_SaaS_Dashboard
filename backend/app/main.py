@@ -2,7 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import engine, Base
+from app.core.logging_config import setup_logging
 from app.api.v1 import auth, users, customers, products, orders, subscriptions, invoices, payments, uploads, emails, analytics, websocket
+
+setup_logging()
 
 # Auto-create tables for SQLite/dev convenience; Postgres should use Alembic.
 if "sqlite" in settings.DATABASE_URL or settings.ENVIRONMENT == "development":
