@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import api from '../lib/api';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { useFilterStore } from '../store/useStore';
-import { Search, Plus, Edit, Eye, Package } from 'lucide-react';
+import { Search, Plus, Edit, Eye } from 'lucide-react';
 
 interface Order {
   id: number;
@@ -24,11 +24,7 @@ export default function Orders() {
   const [search, setSearch] = useState('');
   const { orderFilters, setOrderFilters } = useFilterStore();
 
-  useEffect(() => {
-    fetchOrders();
-  }, [orderFilters]);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       const response = await api.get('/api/v1/orders', {
         params: orderFilters,
@@ -39,7 +35,11 @@ export default function Orders() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [orderFilters]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   const handleSearch = (value: string) => {
     setSearch(value);

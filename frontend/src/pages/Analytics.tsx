@@ -190,12 +190,12 @@ export default function Analytics() {
             <CardContent>
               <div className="text-2xl font-bold">{data?.customer_growth?.total_customers || 0}</div>
               <div className="flex items-center text-xs text-muted-foreground mt-1">
-                {data?.customer_growth?.growth_rate >= 0 ? (
+                {(data?.customer_growth?.growth_rate ?? 0) >= 0 ? (
                   <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
                 ) : (
                   <TrendingUp className="h-3 w-3 mr-1 text-red-500 rotate-180" />
                 )}
-                {Math.abs(data?.customer_growth?.growth_rate || 0).toFixed(1)}% growth rate
+                {Math.abs(data?.customer_growth?.growth_rate ?? 0).toFixed(1)}% growth rate
               </div>
             </CardContent>
           </Card>

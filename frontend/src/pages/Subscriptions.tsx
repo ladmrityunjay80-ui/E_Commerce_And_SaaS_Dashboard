@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import api from '../lib/api';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { useFilterStore } from '../store/useStore';
-import { Search, Plus, Edit, Eye, CreditCard } from 'lucide-react';
+import { Search, Plus, Edit, Eye } from 'lucide-react';
 
 interface Subscription {
   id: number;
@@ -30,11 +29,7 @@ export default function Subscriptions() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  useEffect(() => {
-    fetchSubscriptions();
-  }, [search, statusFilter]);
-
-  const fetchSubscriptions = async () => {
+  const fetchSubscriptions = useCallback(async () => {
     try {
       const params: Record<string, string> = {};
       if (search) params.search = search;
@@ -46,7 +41,11 @@ export default function Subscriptions() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, statusFilter]);
+
+  useEffect(() => {
+    fetchSubscriptions();
+  }, [fetchSubscriptions]);
 
   const handleSearch = (value: string) => {
     setSearch(value);

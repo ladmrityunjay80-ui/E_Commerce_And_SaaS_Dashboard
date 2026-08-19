@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import api from '../lib/api';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
@@ -48,12 +48,7 @@ export default function Customers() {
     notes: '',
   });
 
-  useEffect(() => {
-    fetchCustomers();
-    fetchUsers();
-  }, [search]);
-
-  const fetchCustomers = async () => {
+  const fetchCustomers = useCallback(async () => {
     try {
       const params: Record<string, string> = {};
       if (search) params.search = search;
@@ -64,16 +59,21 @@ export default function Customers() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [search]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const response = await api.get('/api/v1/users');
       setUsers(response.data);
     } catch (error) {
       console.error('Failed to fetch users:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchCustomers();
+    fetchUsers();
+  }, [fetchCustomers, fetchUsers]);
 
   const handleSearch = (value: string) => {
     setSearch(value);

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import api from '../lib/api';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
@@ -38,11 +38,7 @@ export default function Users() {
   const [submitting, setSubmitting] = useState(false);
   const { userFilters, setUserFilters } = useFilterStore();
 
-  useEffect(() => {
-    fetchUsers();
-  }, [userFilters]);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const response = await api.get('/api/v1/users', {
         params: userFilters,
@@ -53,7 +49,11 @@ export default function Users() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userFilters]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleSearch = (value: string) => {
     setSearch(value);

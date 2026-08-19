@@ -13,7 +13,7 @@ import Analytics from './pages/Analytics';
 import Layout from './components/Layout';
 
 function App() {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
   const { darkMode } = useUIStore();
 
   useEffect(() => {
