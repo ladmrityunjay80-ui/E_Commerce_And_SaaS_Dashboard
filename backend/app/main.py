@@ -4,8 +4,9 @@ from app.core.config import settings
 from app.core.database import engine, Base
 from app.api.v1 import auth, users, products, orders, subscriptions, invoices, analytics, websocket
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
+# Auto-create tables for SQLite/dev convenience; Postgres should use Alembic.
+if "sqlite" in settings.DATABASE_URL or settings.ENVIRONMENT == "development":
+    Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="SaaS Admin Dashboard API",
